@@ -1,9 +1,7 @@
 import random
+import string
 
-LOWCHARS = 'abcdefghijklmnopqrstuvwxyz'
-UPCHARS = ''.join([c.upper() for c in LOWCHARS])
-NUMBERS = '0123456789'
-SPECIAL = '!$%^&*@#'
+SPECIALS = '!$%^&*@#'        # Well, could use string.punctuation, but only needs these really...
 
 ############################################
 def generate_random_password(length = 8, useUpper = False, useNumbers = False, useSpecial = False):
@@ -18,17 +16,41 @@ def generate_random_password(length = 8, useUpper = False, useNumbers = False, u
     Return:
         A passwords with randomly selected characters.
     '''
-    feed = LOWCHARS
+    ichar = 0       # Start counting how many character are filled
+
+    # By default, start with lowercase letters...
+    feed = string.ascii_lowercase
+    password = random.SystemRandom().choice(string.ascii_lowercase)
+    ichar += 1
+
     if useUpper:
-        feed += UPCHARS
+        # Add uppercase (at least one and add to the pool)
+        feed += string.ascii_uppercase
+        password += random.SystemRandom().choice(string.ascii_uppercase)
+        ichar += 1
     
     if useNumbers:
-        feed += NUMBERS
+        # Add digits (at least one and add to the pool)
+        feed += string.digits
+        password += random.SystemRandom().choice(string.digits)
+        ichar += 1
 
     if useSpecial:
-        feed += SPECIAL
-    
-    return ''.join(random.sample(feed, length))
+        # Add special characters (at least one and add to the pool)
+        feed += SPECIALS
+        password += random.SystemRandom().choice(SPECIALS)
+        ichar += 1
+
+    if ichar < length:
+        for i in range(length - ichar):
+            password += random.SystemRandom().choice(feed)
+
+    # OK, strictly speaking, I may exceed the max length...
+    # could do something funcy to create a smaller one?
+        
+    password_list = list(password)
+    random.SystemRandom().shuffle(password_list)
+    return ''.join(password_list)
 
 ############################################
 def meetsCriteria(password, charset, mincount=1):
@@ -50,8 +72,8 @@ def meetsCriteria(password, charset, mincount=1):
 
 
 if __name__ == "__main__":
-    print(generate_random_password())
-    print(generate_random_password(useUpper=True))
-    print(generate_random_password(length=12, useUpper=True, useNumbers=True))
-    print(generate_random_password(length=20, useUpper=True, useNumbers=True, useSpecial=True))
-    print(generate_random_password(length=15, useUpper=True, useSpecial=True))
+    print(f" 8 lowercase letters only          :: {generate_random_password()}")
+    print(f" 8 lower+uppercase letters         :: {generate_random_password(useUpper=True)}")
+    print(f"12 lower+uppercase+digits          :: {generate_random_password(length=12, useUpper=True, useNumbers=True)}")
+    print(f"20 lower+uppercase+digits+specials :: {generate_random_password(length=20, useUpper=True, useNumbers=True, useSpecial=True)}")
+    print(f"15 lower+uppercase+specials        :: {generate_random_password(length=15, useUpper=True, useSpecial=True)}")
