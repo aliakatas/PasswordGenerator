@@ -70,10 +70,46 @@ def meetsCriteria(password, charset, mincount=1):
             count += 1
     return count >= mincount
 
+def custom_assert(length = 8, useUpper = False, useNumbers = False, useSpecial = False):
+    '''
+    Automates messaging of the tests.
+    '''
+    word = generate_random_password(length, useUpper, useNumbers, useSpecial)
+    
+    msg = f"{length} "
+    msg += "lowercase"
 
+    if useUpper:
+        msg += "+uppercase"
+    if useNumbers:
+        msg += "+digits"
+    if useSpecial:
+        msg += "+specials"
+    
+    msg += " :: "
+
+    print(msg, end='')
+    if useUpper:
+        if not meetsCriteria(word, string.ascii_uppercase):
+            print("***FAILED*** with Uppercase...")
+            return 
+    if useNumbers:
+        if not meetsCriteria(word, string.digits):
+            print("***FAILED*** with Digits...")
+            return 
+    if useSpecial:
+        if not meetsCriteria(word, SPECIALS):
+            print("***FAILED*** with Specials...")
+            return 
+
+    print(f"{word}")
+
+############################################
 if __name__ == "__main__":
-    print(f" 8 lowercase letters only          :: {generate_random_password()}")
-    print(f" 8 lower+uppercase letters         :: {generate_random_password(useUpper=True)}")
-    print(f"12 lower+uppercase+digits          :: {generate_random_password(length=12, useUpper=True, useNumbers=True)}")
-    print(f"20 lower+uppercase+digits+specials :: {generate_random_password(length=20, useUpper=True, useNumbers=True, useSpecial=True)}")
-    print(f"15 lower+uppercase+specials        :: {generate_random_password(length=15, useUpper=True, useSpecial=True)}")
+    
+    custom_assert()
+    custom_assert(length=8, useUpper=True)
+    custom_assert(length=12, useUpper=True, useNumbers=True)
+    custom_assert(length=12, useUpper=True, useNumbers=True)
+    custom_assert(length=20, useUpper=True, useNumbers=True, useSpecial=True)
+    custom_assert(length=15, useUpper=True, useSpecial=True)
